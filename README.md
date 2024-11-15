@@ -20,7 +20,7 @@ To build and use this project on Windows, you need to have the correct compiler 
 
 2. **Install dependencies via vcpkg**:
 
-   Use vcpkg to install dependencies such as OpenSSL and nlohmann_json for the MinGW triplet. This step is required for building the project.
+   Use vcpkg to install dependencies such as OpenSSL and nlohmann_json for the MinGW triplet.
 
    Example command to install OpenSSL:
 
@@ -38,17 +38,38 @@ For example, on Ubuntu, use:
 sudo apt-get install libssl-dev nlohmann-json3-dev
 ```
 
+### On macOS:
+
+On macOS, you can use **Homebrew** to install the required dependencies:
+
+```bash
+brew install openssl
+brew install nlohmann-json
+```
+
 ## Build Instructions
 
 ### 1. Generate the Build Files
 
-Use the following command to configure and generate the build files using CMake:
+On Windows:
 
 ```bash
-cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DVCPKG_PATH="C:\path\to\vcpkg" -DCMAKE_PREFIX_PATH="C:\path\to\vcpkg\installed\x64-mingw-dynamic\share" -DCMAKE_TOOLCHAIN_FILE="C:\path\to\vcpkg\scripts\buildsystems\vcpkg.cmake" -DOPENSSL_ROOT_DIR="C:\path\to\vcpkg\installed\x64-mingw-dynamic"
+cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release -DVCPKG_PATH="C:\path\to\vcpkg" -DCMAKE_PREFIX_PATH="C:\path\to\vcpkg\installed\x64-mingw-dynamic\share" -DCMAKE_TOOLCHAIN_FILE="C:\path\to\vcpkg\scripts\buildsystems\vcpkg.cmake"
 ```
 
-- Replace `C:\path\to\vcpkg` with the actual path where you have your `vcpkg` installed.
+On Linux:
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+```
+
+On macOS:
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+```
+
+- For Windows, replace `C:\path\to\vcpkg` with the actual path where you have your vcpkg installed.
 
 ### 2. Build the Project
 
@@ -60,41 +81,66 @@ cmake --build build --config Release --target UbuntuImageFetcher
 
 ### 3. Run the Application
 
-Once the build is complete, run the application using the following command:
+Once the build is complete, you can run the application using the commands below.
 
-```bash
-.\build\UbuntuImageFetcher.exe --releases
-```
+## Usage Instructions
 
-Replace `--releases` with other flags as needed for your use case (`--lts`, `--sha256 <release_name>`).
+After building the executable, you can use it to interact with Ubuntu releases through various commands. Note that the path separator (`/` or `\`) and the format to access the executable may vary depending on your operating system. For instance:
 
-## Troubleshooting
+- On **Linux** and **macOS**, use `/` (forward slash).
+- On **Windows**, use `\` (backslash) or specify paths accordingly.
 
-### Windows
+Below are the available options:
 
-If you encounter issues with linking libraries, ensure that you are linking the required libraries in your CMake configuration, especially if using OpenSSL. Add the following lines in your `CMakeLists.txt`:
+1. **List All Supported Ubuntu Releases**
 
-```cmake
-if(WIN32)
-    target_link_libraries(UbuntuImageFetcher PRIVATE
-        ws2_32
-        crypt32
-        nlohmann_json::nlohmann_json
-        OpenSSL::SSL
-        OpenSSL::Crypto
-    )
-endif()
-```
+   To display a list of all currently supported Ubuntu releases, run:
 
-These libraries are necessary for proper functionality on Windows.
+   - On Linux/macOS:
+     ```bash
+     ./build/UbuntuImageFetcher --releases
+     ```
+   - On Windows:
+     ```bash
+     .\build\UbuntuImageFetcher.exe --releases
+     ```
 
-### Linux
+2. **Get the Current Ubuntu LTS Version**
 
-For Linux systems, the linking should work without these extra configurations, but ensure that `libssl-dev` and other required libraries are installed:
+   To retrieve the current Long-Term Support (LTS) version of Ubuntu, use:
 
-```bash
-sudo apt-get install libssl-dev nlohmann-json3-dev
-```
+   - On Linux/macOS:
+     ```bash
+     ./build/UbuntuImageFetcher --lts
+     ```
+   - On Windows:
+     ```bash
+     .\build\UbuntuImageFetcher.exe --lts
+     ```
+
+3. **Get the SHA256 of the Disk Image for a Given Ubuntu Release**
+
+   To get the SHA256 hash of the `disk1.img` file for a specific Ubuntu release, replace `<release_name>` with the desired release name (e.g., "focal" for Ubuntu 20.04):
+
+   - On Linux/macOS:
+     ```bash
+     ./build/UbuntuImageFetcher --sha256 <release_name>
+     ```
+   - On Windows:
+     ```bash
+     .\build\UbuntuImageFetcher.exe --sha256 <release_name>
+     ```
+
+   Example:
+
+   - On Linux/macOS:
+     ```bash
+     ./build/UbuntuImageFetcher --sha256 focal
+     ```
+   - On Windows:
+     ```bash
+     .\build\UbuntuImageFetcher.exe --sha256 focal
+     ```
 
 ## License
 
